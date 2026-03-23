@@ -14,13 +14,30 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
+backend = "cpu"
+
 try:
     from mlx_audio.tts.utils import load_model
     from mlx_audio.tts.generate import generate_audio
+    backend = "mlx"
 except ImportError:
-    print("Error: 'mlx_audio' library not found.")
-    print("Run: source .venv/bin/activate")
-    sys.exit(1)
+    try:
+        import torch
+        if torch.cuda.is_available():
+            backend = "cuda"
+        else:
+            backend = "cpu"
+            
+        print(f"MLX not found. Falling back to PyTorch ({backend.upper()})")
+        # Placeholder for PyTorch logic
+        def load_model(*args, **kwargs):
+            raise NotImplementedError("PyTorch load_model is not implemented yet.")
+        def generate_audio(*args, **kwargs):
+            raise NotImplementedError("PyTorch generate_audio is not implemented yet.")
+            
+    except ImportError:
+        print("Error: Neither mlx_audio nor torch is available.")
+        sys.exit(1)
 
 # Configuration
 BASE_OUTPUT_DIR = os.path.join(os.getcwd(), "outputs")

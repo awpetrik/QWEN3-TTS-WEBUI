@@ -16,13 +16,30 @@ from main import (
     clean_memory
 )
 
+backend = "cpu"
+
 try:
     from mlx_audio.tts.utils import load_model
     from mlx_audio.tts.generate import generate_audio
+    backend = "mlx"
 except ImportError:
-    print("Error: 'mlx_audio' library not found.")
-    import sys
-    sys.exit(1)
+    try:
+        import torch
+        if torch.cuda.is_available():
+            backend = "cuda"
+        else:
+            backend = "cpu"
+            
+        print(f"MLX not found. Falling back to PyTorch ({backend.upper()})")
+        def load_model(*args, **kwargs):
+            raise NotImplementedError("PyTorch load_model is not implemented yet.")
+        def generate_audio(*args, **kwargs):
+            raise NotImplementedError("PyTorch generate_audio is not implemented yet.")
+            
+    except ImportError:
+        print("Error: Neither mlx_audio nor torch is available.")
+        import sys
+        sys.exit(1)
 
 app = FastAPI()
 
