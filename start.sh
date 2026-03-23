@@ -1,84 +1,70 @@
 #!/usr/bin/env bash
-
-# Stop execution on any error
 set -e
 
-echo "=========================================================="
-echo "  🚀 Initializing Qwen3-TTS Playground"
-echo "=========================================================="
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m'
 
-# 1. Check Python installation
+echo -e "\nStarting Qwen3-TTS"
+echo -e "------------------\n"
+
+# 1. Python check
+echo -e "• Checking Python"
 while ! command -v python3 &> /dev/null; do
-    echo "❌ ERROR: Python3 is not installed or not in PATH."
-    echo "🌐 Opening your browser to the Python download page..."
-    
+    echo -e "  ${RED}✖ Python missing${NC}"
+    echo -e "  → Opening download page"
     if [[ "$OSTYPE" == "darwin"* ]]; then
         open "https://www.python.org/downloads/"
     elif command -v xdg-open &> /dev/null; then
         xdg-open "https://www.python.org/downloads/"
-    else
-        echo "Please download and install Python from https://www.python.org/downloads/"
     fi
-    
-    echo ""
-    echo "⏳ Waiting for Python installation..."
-    read -p "After you have installed Python, press [Enter] to try again..."
+    read -p "  → Press [Enter] after install"
 done
+echo -e "  ${GREEN}✔ Python found${NC}\n"
 
-# 2. Virtual Environment Setup
+# 2. Venv setup
+echo -e "• Checking environment"
 if [ ! -d ".venv" ]; then
-    echo "📦 Creating virtual environment (.venv)..."
+    echo -e "  → Creating venv"
     python3 -m venv .venv
-else
-    echo "✅ Virtual environment found."
 fi
-
-# 3. Activate Virtual Environment
-echo "🔄 Activating environment..."
+echo -e "  → Activating venv"
 source .venv/bin/activate
+echo -e "  ${GREEN}✔ Environment ready${NC}\n"
 
-# 4. Install Dependencies
-echo "📥 Installing dependencies (this might take a minute)..."
+# 3. Dependencies
+echo -e "• Installing dependencies"
+echo -e "  → Upgrading pip"
 python3 -m pip install --upgrade pip > /dev/null 2>&1
-pip install -r requirements.txt
+echo -e "  → Installing packages"
+pip install -r requirements.txt > /dev/null 2>&1
+echo -e "  ${GREEN}✔ Dependencies installed${NC}\n"
 
-# 5. Check for ffmpeg (Required for Audio Conversion)
+# 4. ffmpeg check
+echo -e "• Checking ffmpeg"
 if ! command -v ffmpeg &> /dev/null; then
-    echo "⚠️  WARNING: ffmpeg is not installed. Voice cloning features may fail."
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "   -> Please run: brew install ffmpeg"
-    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        if command -v apt-get &> /dev/null; then
-            echo "   -> Please run: sudo apt-get install ffmpeg"
-        elif command -v dnf &> /dev/null; then
-            echo "   -> Please run: sudo dnf install ffmpeg"
-        elif command -v pacman &> /dev/null; then
-            echo "   -> Please run: sudo pacman -S ffmpeg"
-        elif command -v zypper &> /dev/null; then
-            echo "   -> Please run: sudo zypper install ffmpeg"
-        elif command -v apk &> /dev/null; then
-            echo "   -> Please run: sudo apk add ffmpeg"
-        else
-            echo "   -> Please install 'ffmpeg' using your distribution's package manager."
-        fi
-    else
-        echo "   -> Please install 'ffmpeg' manually for your OS."
-    fi
+    echo -e "  ${YELLOW}✖ ffmpeg missing${NC}"
+    echo -e "  → Voice cloning disabled\n"
+else
+    echo -e "  ${GREEN}✔ ffmpeg found${NC}\n"
 fi
 
-# 6. Auto-Create Required Directories
+# 5. Directories
+echo -e "• Checking directories"
 for dir in models voices outputs; do
     if [ ! -d "$dir" ]; then
         mkdir -p "$dir"
-        echo "📁 Created missing directory: ./$dir"
     fi
 done
+echo -e "  ${GREEN}✔ Directories ready${NC}\n"
 
-# 7. Start the Server
-echo "🔍 Finding an available port (Anti-Conflict)..."
-export PORT=$(python3 -c "import socket; p=8000; s=socket.socket(); exec('while True:\n try: s.bind((\"\",p)); print(p); s.close(); break\n except: p+=1')")
+# 6. Find port
+echo -e "• Finding port"
+PORT=$(python3 -c "import socket; p=8000; s=socket.socket(); exec('while True:\n try: s.bind((\"\",p)); s.close(); break\n except: p+=1'); print(p)")
+echo -e "  ${GREEN}✔ Port $PORT ready${NC}\n"
 
-echo "=========================================================="
-echo "  🎵 Starting Server at http://localhost:$PORT"
-echo "=========================================================="
+echo -e "${GREEN}✔ Setup complete${NC}\n"
+echo -e "→ Running server: http://localhost:$PORT\n"
+
 uvicorn app:app --host 0.0.0.0 --port $PORT
