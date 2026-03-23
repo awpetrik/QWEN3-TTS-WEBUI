@@ -160,52 +160,95 @@ async def generate_speech(
         req_uuid = uuid.uuid4().hex[:8]
         temp_dir = make_temp_dir() + f"_{req_uuid}"
         
-        if mode == "custom":
-            if not speaker or not instruct:
-                raise HTTPException(status_code=400, detail="Speaker and instruction are required for Custom mode")
-            generate_audio(
-                model=model, text=text, voice=speaker, 
-                instruct=instruct, speed=speed, output_path=temp_dir
-            )
-            
-        elif mode == "design":
-            if not instruct:
-                raise HTTPException(status_code=400, detail="Instruction is required for Design mode")
-            generate_audio(
-                model=model, text=text, instruct=instruct, output_path=temp_dir
-            )
-            
-        elif mode == "clone":
-            r_audio_path = None
-            r_text = None
-            
-            if ref_voice:
-                r_audio_path = os.path.join(VOICES_DIR, f"{ref_voice}.wav")
-                txt_path = os.path.join(VOICES_DIR, f"{ref_voice}.txt")
-                if os.path.exists(txt_path):
-                    with open(txt_path, 'r', encoding='utf-8') as f:
-                        r_text = f.read().strip()
-                if not os.path.exists(r_audio_path):
-                    raise HTTPException(status_code=400, detail="Selected reference voice not found")
-            elif ref_audio:
-                temp_r_audio = os.path.join(os.getcwd(), f"temp_ref_{req_uuid}.wav")
-                with open(temp_r_audio, "wb") as f:
-                    shutil.copyfileobj(ref_audio.file, f)
-                r_audio_path = convert_audio_if_needed(temp_r_audio)
-                converted_audio = r_audio_path
-                if not r_audio_path:
-                    raise HTTPException(status_code=400, detail="Could not convert reference audio")
-                r_text = ref_text or "."
+        # --- SMART CHUNKING FIX FOR LONG TEXT ---
+        import re
+        import soundfile as sf
+        import numpy as np
+        
+        # 1. Split text into manageable chunks by punctuation
+        sentences = re.split(r'([.!?;\n]+)', text)
+        chunks = []
+        current_chunk = ""
+        for i in range(len(sentences)):
+            part = sentences[i].strip()
+            if not part: continue
+            if re.match(r'^[.!?;\n]+$', part):
+                current_chunk += part
+                continue
                 
-            if not r_audio_path:
-                raise HTTPException(status_code=400, detail="A reference voice or reference audio file is required for Clone mode")
-                
-            generate_audio(
-                model=model, text=text, ref_audio=r_audio_path, 
-                ref_text=r_text, output_path=temp_dir
-            )
-        else:
-            raise HTTPException(status_code=400, detail="Invalid mode specified")
+            if len(current_chunk) + len(part) < 250:
+                current_chunk += (" " + part if current_chunk and not current_chunk.endswith("\n") else part)
+            else:
+                if current_chunk: chunks.append(current_chunk.strip())
+                current_chunk = part
+        if current_chunk: chunks.append(current_chunk.strip())
+
+        # 2. Iteratively Generate and Stitch Audio
+        audio_fragments = []
+        sr = 24000
+        
+        os.makedirs(temp_dir, exist_ok=True)
+        
+        for idx, chunk in enumerate(chunks):
+            if not chunk.strip(): continue
+            chunk_temp_dir = f"{temp_dir}_{idx}"
+            
+            try:
+                if mode == "custom":
+                    if not speaker or not instruct:
+                        raise HTTPException(status_code=400, detail="Speaker and instruction are required for Custom mode")
+                    generate_audio(
+                        model=model, text=chunk, voice=speaker, 
+                        instruct=instruct, speed=speed, output_path=chunk_temp_dir
+                    )
+                elif mode == "design":
+                    if not instruct:
+                        raise HTTPException(status_code=400, detail="Instruction is required for Design mode")
+                    generate_audio(
+                        model=model, text=chunk, instruct=instruct, output_path=chunk_temp_dir
+                    )
+                elif mode == "clone":
+                    r_audio_path = None
+                    r_text = None
+                    if ref_voice:
+                        r_audio_path = os.path.join(VOICES_DIR, f"{ref_voice}.wav")
+                        txt_path = os.path.join(VOICES_DIR, f"{ref_voice}.txt")
+                        if os.path.exists(txt_path):
+                            with open(txt_path, 'r', encoding='utf-8') as f:
+                                r_text = f.read().strip()
+                        if not os.path.exists(r_audio_path):
+                            raise HTTPException(status_code=400, detail="Selected reference voice not found")
+                    elif ref_audio:
+                        r_audio_path = converted_audio
+                        r_text = ref_text or "."
+                        
+                    if not r_audio_path:
+                        raise HTTPException(status_code=400, detail="A reference voice is required")
+                        
+                    generate_audio(
+                        model=model, text=chunk, ref_audio=r_audio_path, 
+                        ref_text=r_text, output_path=chunk_temp_dir
+                    )
+                else:
+                    raise HTTPException(status_code=400, detail="Invalid mode specified")
+
+                # Load generated chunk
+                chunk_file = os.path.join(chunk_temp_dir, "audio_000.wav")
+                if os.path.exists(chunk_file):
+                    data, samplerate = sf.read(chunk_file)
+                    audio_fragments.append(data)
+                    sr = samplerate
+                    
+            finally:
+                if os.path.exists(chunk_temp_dir):
+                    shutil.rmtree(chunk_temp_dir, ignore_errors=True)
+
+        if not audio_fragments:
+            raise HTTPException(status_code=500, detail="Audio generation failed (empty output).")
+            
+        # 3. Stitch seamlessly and save into main expected output path
+        final_audio = np.concatenate(audio_fragments)
+        sf.write(os.path.join(temp_dir, "audio_000.wav"), final_audio, sr)
 
         timestamp = datetime.now().strftime("%H-%M-%S")
         clean_text = re.sub(r'[^\w\s-]', '', text)[:20].strip().replace(' ', '_') or "audio"
