@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         outputSection.classList.remove('hidden');
         audioResult.style.display = 'block';
-        
+
         // Render Skeleton Generation Card
         audioResult.innerHTML = `
             <div class="skeleton-card fade-in">
@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             historyItem.style.borderRadius = "12px";
             historyItem.style.border = "1px solid var(--border-color)";
             historyItem.style.backgroundColor = "var(--bg-panel)";
-            
+
             const logDate = new Date().toLocaleTimeString();
             historyItem.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
@@ -255,7 +255,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
                 <audio controls src="${url}" style="width: 100%; height: 36px; border-radius: 18px; outline: none;"></audio>
             `;
-            
+
             const deleteBtn = historyItem.querySelector('.delete-btn');
             deleteBtn.addEventListener('click', () => {
                 historyItem.style.opacity = '0';
@@ -266,8 +266,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     URL.revokeObjectURL(url);
                 }, 300);
             });
-            
-            
+
+
             historyList.prepend(historyItem);
 
         } catch (error) {
@@ -294,13 +294,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         const res = await fetch('/api/metadata');
         if (!res.ok) throw new Error("Failed to fetch metadata");
         apiData = await res.json();
-        
+
         const badge = document.getElementById('backend-badge');
         if (badge && apiData.backend) {
-            badge.textContent = apiData.backend;
+            let displayLabel = 'Inference: Unknown';
+            if (apiData.backend === 'mlx') {
+                displayLabel = 'Inference: Apple Silicon (MLX)';
+            } else if (apiData.backend === 'cuda') {
+                displayLabel = 'Inference: NVIDIA (CUDA)';
+            } else if (apiData.backend === 'cpu') {
+                displayLabel = 'Inference: CPU';
+            }
+
+            badge.textContent = displayLabel;
             badge.className = `badge ${apiData.backend}`;
         }
-        
+
         populateModels(apiData.models);
     } catch (err) {
         audioResult.innerHTML = `
