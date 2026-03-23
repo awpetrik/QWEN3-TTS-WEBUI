@@ -53,9 +53,25 @@ for %%D in (models voices outputs) do (
 )
 
 :: 7. Start Server
+echo 🔍 Finding an available port (Anti-Conflict)...
+echo import socket > .get_port.py
+echo p = 8000 >> .get_port.py
+echo while True: >> .get_port.py
+echo     try: >> .get_port.py
+echo         s = socket.socket() >> .get_port.py
+echo         s.bind(('', p)) >> .get_port.py
+echo         print(p) >> .get_port.py
+echo         s.close() >> .get_port.py
+echo         break >> .get_port.py
+echo     except: >> .get_port.py
+echo         p += 1 >> .get_port.py
+
+for /f "tokens=*" %%p in ('python .get_port.py') do set PORT=%%p
+del .get_port.py
+
 echo ==========================================================
-echo   🎵 Starting Server at http://localhost:8000
+echo   🎵 Starting Server at http://localhost:%PORT%
 echo ==========================================================
-uvicorn app:app --host 0.0.0.0 --port 8000
+uvicorn app:app --host 0.0.0.0 --port %PORT%
 
 pause

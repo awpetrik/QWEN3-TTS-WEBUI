@@ -75,7 +75,10 @@ for dir in models voices outputs; do
 done
 
 # 7. Start the Server
+echo "🔍 Finding an available port (Anti-Conflict)..."
+export PORT=$(python3 -c "import socket; p=8000; s=socket.socket(); exec('while True:\n try: s.bind((\"\",p)); print(p); s.close(); break\n except: p+=1')")
+
 echo "=========================================================="
-echo "  🎵 Starting Server at http://localhost:8000"
+echo "  🎵 Starting Server at http://localhost:$PORT"
 echo "=========================================================="
-uvicorn app:app --host 0.0.0.0 --port 8000
+uvicorn app:app --host 0.0.0.0 --port $PORT
