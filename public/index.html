@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qwen3-TTS Playground</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- SVG Icons -->
+    <style>
+        .icon {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Top Navigation -->
+        <header class="top-nav">
+            <div class="nav-left">
+                <div class="logo">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-7.5c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+                    </svg>
+                    <span>Qwen3-TTS Playground</span>
+                </div>
+            </div>
+            <div class="nav-right">
+                <button id="generate-btn" class="run-btn">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                    </svg>
+                    <span class="btn-text">Run Synthesis</span>
+                    <span class="loader hidden"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <div class="workspace">
+
+            <!-- Left Column: Content -->
+            <main class="content-pane">
+                <div class="content-wrapper">
+                    <div class="dynamic-instructions-wrapper" id="instructions-container">
+                        <!-- Instuctions -->
+                    </div>
+
+                    <div class="form-group text-group">
+                        <label for="text-input" class="visually-hidden">Text Input</label>
+                        <textarea id="text-input"
+                            placeholder="Start typing or paste text here to synthesize..."></textarea>
+                    </div>
+
+                    <div class="output-section hidden" id="output-section">
+                        <h3 class="section-title">Audio Output</h3>
+                        <div id="audio-result" class="audio-card">
+                            <p id="status-text" class="status-indicator">Ready...</p>
+                            <!-- Audio element -->
+                        </div>
+                        <div id="history-list" class="history-list"></div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Column: Settings -->
+            <aside class="settings-pane">
+                <div class="settings-header">
+                    <h3>Run Settings</h3>
+                </div>
+
+                <div class="settings-section">
+                    <div class="settings-block">
+                        <h4 class="section-subtitle">Model Settings</h4>
+                        <div class="form-group">
+                            <div class="select-container">
+                                <select id="model-select">
+                                    <option value="" disabled selected>Loading models...</option>
+                                </select>
+                            </div>
+                            <p class="helper-text" id="model-helper">Select TTS model architecture.</p>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Settings Area -->
+                    <div id="dynamic-settings" class="dynamic-settings-zone">
+                        <!-- Speaker, Speed, Refs -->
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
