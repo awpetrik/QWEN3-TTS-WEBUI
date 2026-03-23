@@ -26,7 +26,7 @@
 - **Voice Cloning (Zero-Shot):** Provide a brief reference audio file of an individual; the underlying model extracts and replicates the target's vocal profile seamlessly.
 - **Continuous Generation:** Smart syntax chunking logic partitions elongated string inputs into functional vectors, avoiding token buffer limits to output continuous long-form audio streams.
 
-## UI/UX Engineering
+## UI/UX 
 
 - **State Morphing:** Dynamically adapts interface structures, configuration panels, and instructions according to the selected inference mode gracefully, eliminating DOM reloading.
 - **Ambient Hardware Awareness:** Intelligent navigation-bar badges evaluate deployment environments and explicitly denote active backend inference hardware in real-time (MLX, CUDA, or CPU).
