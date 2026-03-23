@@ -10,6 +10,11 @@
     <img src="https://img.shields.io/badge/Frontend-Vanilla%20JS%20%7C%20CSS3-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="Vanilla JS" />
     <img src="https://img.shields.io/badge/Support-CUDA%20%7C%20CPU-76B900?style=for-the-badge&logo=nvidia&logoColor=white" alt="CUDA Support" />
   </p>
+  
+---
+
+  ![App Preview](https://github.com/user-attachments/assets/e67fc6fb-5498-4fb0-89b5-43e7fe2236e8)
+  
 </div>
 
 <hr />
