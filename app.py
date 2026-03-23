@@ -88,7 +88,8 @@ async def get_metadata():
         "models": MODELS,
         "speaker_map": SPEAKER_MAP,
         "speakers": speakers,
-        "emotions": EMOTION_EXAMPLES
+        "emotions": EMOTION_EXAMPLES,
+        "backend": backend
     }
 
 @app.get("/api/voices")

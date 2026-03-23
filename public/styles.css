@@ -493,3 +493,39 @@ audio {
         transform: rotate(360deg);
     }
 }
+
+/* Backend Badges */
+.badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge.mlx {
+    background: rgba(168, 199, 250, 0.15);
+    color: var(--text-accent);
+    border: 1px solid rgba(168, 199, 250, 0.3);
+}
+
+.badge.cuda {
+    background: rgba(118, 185, 0, 0.15);
+    color: #76b900;
+    border: 1px solid rgba(118, 185, 0, 0.3);
+}
+
+.badge.cpu {
+    background: rgba(242, 139, 130, 0.15);
+    color: #f28b82;
+    border: 1px solid rgba(242, 139, 130, 0.3);
+}
+
+.badge.hidden {
+    display: none;
+}

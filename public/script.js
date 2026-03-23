@@ -294,6 +294,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         const res = await fetch('/api/metadata');
         if (!res.ok) throw new Error("Failed to fetch metadata");
         apiData = await res.json();
+        
+        const badge = document.getElementById('backend-badge');
+        if (badge && apiData.backend) {
+            badge.textContent = apiData.backend;
+            badge.className = `badge ${apiData.backend}`;
+        }
+        
         populateModels(apiData.models);
     } catch (err) {
         audioResult.innerHTML = `
