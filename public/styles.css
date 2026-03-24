@@ -288,6 +288,35 @@ select {
     border-color: transparent;
 }
 
+.preset-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.preset-chip {
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 3px 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.preset-chip:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    border-color: var(--border-focus);
+}
+.preset-chip:active {
+    transform: scale(0.96);
+}
+
 /* Header Buttons */
 .run-btn {
     display: flex;
@@ -486,6 +515,7 @@ audio {
 
 .icon.spin {
     animation: spin 1s linear infinite;
+    transform-origin: center;
 }
 
 @keyframes spin {

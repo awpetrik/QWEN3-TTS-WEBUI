@@ -52,12 +52,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         instructionsContainer.innerHTML = '';
 
         if (mode === "custom") {
+            const presets = [
+                "Professional & calm", "Excited & energetic", "Whisper",
+                "Angry & loud", "Sad & melancholic", "News anchor", "Storyteller"
+            ];
+            const chipsHtml = presets.map(p => `<span class="preset-chip">${p}</span>`).join('');
+
             instructionsContainer.innerHTML = `
                 <div class="instruction-input-wrap fade-in">
-                    <label>Style Instructions</label>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:4px;">
+                        <label style="margin-bottom:0;">Style Instructions</label>
+                    </div>
                     <input type="text" id="instruct-input" placeholder="Normal tone, excited, whispered..." required>
+                    <div class="preset-chips" id="custom-presets">
+                        ${chipsHtml}
+                    </div>
                 </div>
             `;
+
+            setTimeout(() => {
+                const input = document.getElementById('instruct-input');
+                document.querySelectorAll('#custom-presets .preset-chip').forEach(chip => {
+                    chip.addEventListener('click', () => {
+                        input.value = chip.textContent;
+                        input.focus();
+                    });
+                });
+            }, 0);
 
             let speakersHtml = `<option value="" disabled selected>Select voice...</option>`;
             apiData.speakers.forEach(s => { speakersHtml += `<option value="${s}">${s}</option>`; });
@@ -89,12 +110,33 @@ document.addEventListener('DOMContentLoaded', async () => {
             `;
         }
         else if (mode === "design") {
+            const presets = [
+                "Old British man with a deep voice", "Young energetic girl",
+                "Raspy gravelly cowboy", "Soft spoken narrator", "Anime mascot voice"
+            ];
+            const chipsHtml = presets.map(p => `<span class="preset-chip">${p}</span>`).join('');
+
             instructionsContainer.innerHTML = `
                 <div class="instruction-input-wrap fade-in">
-                    <label>Voice Design Description</label>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:4px;">
+                        <label style="margin-bottom:0;">Voice Design Description</label>
+                    </div>
                     <input type="text" id="instruct-input" placeholder="Old British man with a deep voice..." required>
+                    <div class="preset-chips" id="design-presets">
+                        ${chipsHtml}
+                    </div>
                 </div>
             `;
+
+            setTimeout(() => {
+                const input = document.getElementById('instruct-input');
+                document.querySelectorAll('#design-presets .preset-chip').forEach(chip => {
+                    chip.addEventListener('click', () => {
+                        input.value = chip.textContent;
+                        input.focus();
+                    });
+                });
+            }, 0);
 
             dynamicSettings.innerHTML = `
                 <div class="settings-block fade-in">
@@ -299,7 +341,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (badge && apiData.backend) {
             let displayLabel = 'Running on Unknown';
             if (apiData.backend === 'mlx') {
-                displayLabel = 'Running on <strong>Apple Silicon MPS</strong>';
+                displayLabel = 'Running on <strong>Apple Silicon MLX</strong>';
             } else if (apiData.backend === 'cuda') {
                 displayLabel = 'Running on <strong>NVIDIA CUDA</strong>';
             } else if (apiData.backend === 'cpu') {
