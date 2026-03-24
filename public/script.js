@@ -297,16 +297,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const badge = document.getElementById('backend-badge');
         if (badge && apiData.backend) {
-            let displayLabel = 'Inference: Unknown';
+            let displayLabel = 'Running on Unknown';
             if (apiData.backend === 'mlx') {
-                displayLabel = 'Inference: Apple Silicon (MLX)';
+                displayLabel = 'Running on <strong>Apple Silicon MPS</strong>';
             } else if (apiData.backend === 'cuda') {
-                displayLabel = 'Inference: NVIDIA (CUDA)';
+                displayLabel = 'Running on <strong>NVIDIA CUDA</strong>';
             } else if (apiData.backend === 'cpu') {
-                displayLabel = 'Inference: CPU';
+                displayLabel = 'Running on <strong>CPU</strong>';
             }
 
-            badge.textContent = displayLabel;
+            const spinnerSvg = `<svg class="icon spin" style="width: 14px; height: 14px;" viewBox="0 0 15 15" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.48877 6.75C7.29015 6.75 7.09967 6.82902 6.95923 6.96967C6.81879 7.11032 6.73989 7.30109 6.73989 7.5C6.73989 7.69891 6.81879 7.88968 6.95923 8.03033C7.09967 8.17098 7.29015 8.25 7.48877 8.25C7.68738 8.25 7.87786 8.17098 8.0183 8.03033C8.15874 7.88968 8.23764 7.69891 8.23764 7.5C8.23764 7.30109 8.15874 7.11032 8.0183 6.96967C7.87786 6.82902 7.68738 6.75 7.48877 6.75ZM7.8632 0C11.2331 0 11.3155 2.6775 9.54818 3.5625C8.80679 3.93 8.47728 4.7175 8.335 5.415C8.69446 5.565 9.00899 5.7975 9.24863 6.0975C12.0195 4.5975 15 5.19 15 7.875C15 11.25 12.3265 11.325 11.4428 9.5475C11.0684 8.805 10.2746 8.475 9.57813 8.3325C9.42836 8.6925 9.19621 9 8.89665 9.255C10.3869 12.0225 9.79531 15 7.11433 15C3.74438 15 3.67698 12.315 5.44433 11.43C6.17823 11.0625 6.50774 10.2825 6.65751 9.5925C6.29056 9.4425 5.96855 9.2025 5.72891 8.9025C2.96555 10.3875 0 9.8025 0 7.125C0 3.75 2.666 3.6675 3.54967 5.445C3.92411 6.1875 4.71043 6.51 5.40689 6.6525C5.54918 6.2925 5.78882 5.9775 6.09586 5.7375C4.60559 2.97 5.1972 0 7.8632 0Z"/></svg>`;
+            badge.innerHTML = `
+                <div class="badge-text">${displayLabel}</div>
+                <div class="badge-divider"></div>
+                <div class="badge-icon-wrap">${spinnerSvg}</div>
+            `;
             badge.className = `badge ${apiData.backend}`;
         }
 
