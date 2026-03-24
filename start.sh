@@ -6,8 +6,20 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m'
 
-echo -e "\nStarting Qwen3-TTS"
-echo -e "------------------\n"
+cat << "EOF"
+   ___                     _____     _____ _____ _____ 
+  / _ \__      _____ _ __ |___ /_  _|_   _|_   _/ ___| 
+ | | | \ \ /\ / / _ \ '_ \  |_ \ \/ / | |   | | \___ \ 
+ | |_| |\ V  V /  __/ | | |___) >  <  | |   | |  ___) |
+  \__\_\ \_/\_/ \___|_| |_|____/_/\_\ |_|   |_| |____/ 
+                                                       
+EOF
+
+echo -e "\n${GREEN}Starting Qwen3-TTS Web UI...${NC}"
+echo -e "=========================================="
+echo -e "GitHub: https://github.com/awpetrik/QWEN3-TTS-WEBUI"
+echo -e "Author: awpetrik"
+echo -e "==========================================\n"
 
 # 1. Python check
 echo -e "• Checking Python"
@@ -61,7 +73,7 @@ echo -e "  ${GREEN}✔ Directories ready${NC}\n"
 
 # 6. Find port
 echo -e "• Finding port"
-PORT=$(python3 -c "import socket; p=8000; s=socket.socket(); exec('while True:\n try: s.bind((\"\",p)); s.close(); break\n except: p+=1'); print(p)")
+PORT=$(python3 -c "import socket; p=8000; exec('while True:\n s=socket.socket(); s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1);\n try: s.bind((\"\",p)); s.close(); break\n except: p+=1'); print(p)")
 echo -e "  ${GREEN}✔ Port $PORT ready${NC}\n"
 
 echo -e "${GREEN}✔ Setup complete${NC}\n"

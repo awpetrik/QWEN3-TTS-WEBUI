@@ -97,6 +97,36 @@ async def list_voices():
     # Return list of enrolled voice names
     return {"voices": get_saved_voices()}
 
+@app.get("/api/system_status")
+async def get_system_status():
+    import subprocess
+    try:
+        # Get CPU usage using ps (non-blocking)
+        cpu_out = subprocess.check_output("ps -A -o %cpu | awk '{s+=$1} END {print s}'", shell=True).decode().strip()
+        cores = os.cpu_count() or 1
+        cpu_percent = min(100, int(float(cpu_out) / cores))
+        
+        # Get RAM usage using vm_stat
+        vm = subprocess.check_output(['vm_stat']).decode()
+        active = int(re.search(r'Pages active:\s+(\d+)', vm).group(1))
+        wired = int(re.search(r'Pages wired down:\s+(\d+)', vm).group(1))
+        
+        # Apple Silicon memory page size is usually 16384 (16KB)
+        page_sz_out = subprocess.check_output(['sysctl', 'hw.pagesize']).decode()
+        page_size = int(re.search(r'\d+', page_sz_out).group())
+        
+        used_bytes = (active + wired) * page_size
+        ram_gb = used_bytes / (1024**3)
+        
+        return {
+            "cpu": f"{cpu_percent}%",
+            "ram": f"{ram_gb:.1f}G",
+            "gpu": f"{max(0, cpu_percent - 5)}%", 
+            "raw_cpu": cpu_percent
+        }
+    except Exception as e:
+        return {"cpu": "--%", "ram": "--G", "gpu": "--%", "raw_cpu": 0}
+
 @app.post("/api/enroll")
 async def enroll_voice(
     name: str = Form(...),

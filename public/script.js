@@ -367,4 +367,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         audioResult.style.display = 'block';
         outputSection.classList.remove('hidden');
     }
+
+    // Harware Stats Polling Engine
+    async function updateSystemStats() {
+        try {
+            const res = await fetch('/api/system_status');
+            if (!res.ok) return;
+            const stats = await res.json();
+            const cpuLabel = document.getElementById('metric-cpu') || document.querySelector('.cpu-chip span');
+            const gpuLabel = document.getElementById('metric-gpu');
+            const ramLabel = document.getElementById('metric-ram') || document.querySelector('.ram-chip span');
+            
+            if (cpuLabel) cpuLabel.textContent = `CPU: ${stats.cpu}`;
+            if (gpuLabel) gpuLabel.textContent = `GPU: ${stats.gpu}`;
+            if (ramLabel) ramLabel.textContent = `RAM: ${stats.ram}`;
+            
+            // Visual dynamic indicator for high usage
+            if (stats.raw_cpu > 80) {
+                document.querySelector('.cpu-chip').style.color = '#f28b82';
+                document.querySelector('.cpu-chip svg').style.color = '#f28b82';
+            } else {
+                document.querySelector('.cpu-chip').style.color = 'var(--text-secondary)';
+                document.querySelector('.cpu-chip svg').style.color = '#8ab4f8';
+            }
+        } catch (e) {}
+    }
+    
+    // Initial fetch, then repeat every 3 seconds
+    updateSystemStats();
+    setInterval(updateSystemStats, 3000);
+
 });

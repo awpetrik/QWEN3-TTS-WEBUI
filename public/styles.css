@@ -55,6 +55,7 @@ body {
 .nav-left {
     display: flex;
     align-items: center;
+    gap: 16px;
 }
 
 .logo {
@@ -315,6 +316,31 @@ select {
 }
 .preset-chip:active {
     transform: scale(0.96);
+}
+
+.github-cta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.github-cta:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+}
+
+.github-cta:active {
+    transform: scale(0.97);
 }
 
 /* Header Buttons */
@@ -587,4 +613,61 @@ audio {
 
 .badge.hidden {
     display: none;
+}
+
+/* Hardware Usage Metrics */
+.hw-metrics {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 8px;
+}
+
+.hw-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-family: 'DM Mono', monospace, var(--font-body);
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+    cursor: default;
+    justify-content: center;
+}
+
+.hw-chip span {
+    min-width: 68px;
+    display: inline-block;
+    text-align: left;
+}
+
+.cpu-chip svg { 
+    color: #8ab4f8; 
+    width: 14px; 
+    height: 14px; 
+}
+.gpu-chip svg { 
+    color: #6ee7b7; 
+    width: 14px; 
+    height: 14px; 
+}
+.ram-chip svg { 
+    color: #c58af9; 
+    width: 14px; 
+    height: 14px; 
+}
+
+/* Add subtle data-active highlights when simulated usage is high */
+.ram-chip.high-usage {
+    color: #f28b82;
+    border-color: rgba(242, 139, 130, 0.3);
+    background: rgba(242, 139, 130, 0.1);
+}
+.ram-chip.high-usage svg {
+    color: #f28b82;
 }

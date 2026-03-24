@@ -9,8 +9,18 @@ set "YELLOW=!ESC![0;33m"
 set "NC=!ESC![0m"
 
 echo.
-echo Starting Qwen3-TTS
-echo ------------------
+echo.           ___                     _____     _____ _____ _____ 
+echo.          / _ \__      _____ _ __ |___ /_  _|_   _|_   _/ ___| 
+echo.         | | | \ \ /\ / / _ \ '_ \  |_ \ \/ / | |   | | \___ \ 
+echo.         | |_| |\ V  V /  __/ | | |___) >  <  | |   | |  ___) |
+echo.          \__\_\ \_/\_/ \___|_| |_|____/_/\_\ |_|   |_| |____/ 
+echo.
+
+echo !GREEN!Starting Qwen3-TTS Web UI...!NC!
+echo ==========================================
+echo GitHub: https://github.com/awpetrik/QWEN3-TTS-WEBUI
+echo Author: awpetrik
+echo ==========================================
 echo.
 
 :: 1. Python check
