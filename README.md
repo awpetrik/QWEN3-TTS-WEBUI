@@ -13,13 +13,16 @@
   
 ---
 
-  ![App Preview](https://github.com/user-attachments/assets/e67fc6fb-5498-4fb0-89b5-43e7fe2236e8)
+  ![App Preview](https://github.com/user-attachments/assets/f838686b-e127-4313-8d79-3bc7c4acf80e)
   
 </div>
 
 <hr />
 
 ## Core Features
+
+![App Preview](https://camo.githubusercontent.com/77ec04e899c38d25f65c5a2eb3c96b9b83f02da99bea89db35246eff10a76f1a/68747470733a2f2f7169616e77656e2d7265732e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f5177656e332d5454532d5265706f2f7177656e335f7474735f696e74726f64756374696f6e2e706e67)
+
 
 - **Custom Voice:** Select a prebuilt speaker identity and combine it with expressive style modifiers such as "happy", "whispered", or "shouting".
 - **Voice Design:** Synthesize unprecedented speaker profiles natively by inputting explicit textual descriptions (e.g., "Old British man with a deep, rasping tone").
@@ -34,6 +37,12 @@
 - **Robust Resource Management:** Implements discrete UUID-bound temp operations, aggressive Blob-revocation on the frontend preventing Zombie DOM elements and memory leaks, alongside dedicated background garbage collection on sequential API calls.
 
 ## Quick Start (Automated)
+
+<br>
+  <p>
+  <img src="https://github.com/user-attachments/assets/9c413577-90c9-4cbd-8b12-ec2794c17b90" width="60%"/>
+  </p>
+<br>
 
 We provide comprehensive one-liner bootstrapper scripts bundled with automated environment isolation, browser redirecting (if Python dependencies are missing), and dynamic active-port conflict resolution algorithms.
 
