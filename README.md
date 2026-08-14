@@ -5,7 +5,7 @@
 
   <p>
     <img src="https://img.shields.io/badge/Architecture-Apple%20Silicon%20(MLX)-black?style=for-the-badge&logo=apple" alt="Apple Silicon" />
-    <img src="https://img.shields.io/badge/Language-Python%203.10+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
+    <img src="https://img.shields.io/badge/Language-Python%203.13+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
     <img src="https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
     <img src="https://img.shields.io/badge/Frontend-Vanilla%20JS%20%7C%20CSS3-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="Vanilla JS" />
     <img src="https://img.shields.io/badge/Support-CUDA%20%7C%20CPU-76B900?style=for-the-badge&logo=nvidia&logoColor=white" alt="CUDA Support" />
@@ -69,9 +69,10 @@ start.bat
 For explicit dependency management via standard CLI conventions:
 
 ### 1. Construct Virtual Environment
-Ensure you are running Python 3.10+.
+**Python 3.13 or newer is required.** Several pinned dependencies publish wheels for 3.13+ only — `audioop-lts` (the backport of the `audioop` module removed from the standard library in 3.13), `numpy` 2.3.x, `scipy` 1.17.x and `scikit-learn` 1.8.x. On Python 3.12 or older, `pip install` fails with `No matching distribution found for audioop-lts`.
+
 ```bash
-python3 -m venv .venv
+python3.13 -m venv .venv
 source .venv/bin/activate    # Mac/Linux
 # .venv\Scripts\activate.bat # Windows
 ```

@@ -21,10 +21,29 @@ echo -e "GitHub: https://github.com/awpetrik/QWEN3-TTS-WEBUI"
 echo -e "Author: awpetrik"
 echo -e "==========================================\n"
 
+# requirements.txt pins packages that only publish for Python 3.13+
+# (audioop-lts, numpy 2.3.x, scipy 1.17.x, scikit-learn 1.8.x).
+MIN_PYTHON="3.13"
+
+is_supported_python() {
+    "$1" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 13) else 1)' &> /dev/null
+}
+
+find_python() {
+    local candidate
+    for candidate in python3.13 python3 python3.14; do
+        if command -v "$candidate" &> /dev/null && is_supported_python "$candidate"; then
+            echo "$candidate"
+            return 0
+        fi
+    done
+    return 1
+}
+
 # 1. Python check
 echo -e "• Checking Python"
-while ! command -v python3 &> /dev/null; do
-    echo -e "  ${RED}✖ Python missing${NC}"
+until PYTHON=$(find_python); do
+    echo -e "  ${RED}✖ Python ${MIN_PYTHON}+ missing${NC}"
     echo -e "  → Opening download page"
     if [[ "$OSTYPE" == "darwin"* ]]; then
         open "https://www.python.org/downloads/"
@@ -33,24 +52,34 @@ while ! command -v python3 &> /dev/null; do
     fi
     read -p "  → Press [Enter] after install"
 done
-echo -e "  ${GREEN}✔ Python found${NC}\n"
+echo -e "  ${GREEN}✔ Python found ($("$PYTHON" -V 2>&1))${NC}\n"
 
 # 2. Venv setup
 echo -e "• Checking environment"
+if [ -d ".venv" ] && ! is_supported_python ".venv/bin/python"; then
+    echo -e "  ${RED}✖ Existing .venv is older than Python ${MIN_PYTHON}${NC}"
+    echo -e "  → Delete it and re-run this script: rm -rf .venv"
+    exit 1
+fi
 if [ ! -d ".venv" ]; then
     echo -e "  → Creating venv"
-    python3 -m venv .venv
+    "$PYTHON" -m venv .venv
 fi
 echo -e "  → Activating venv"
 source .venv/bin/activate
 echo -e "  ${GREEN}✔ Environment ready${NC}\n"
 
 # 3. Dependencies
+# Only stdout is discarded here; pip errors stay visible so a failed
+# install reports its own reason instead of aborting silently.
 echo -e "• Installing dependencies"
 echo -e "  → Upgrading pip"
-python3 -m pip install --upgrade pip > /dev/null 2>&1
+python3 -m pip install --upgrade pip > /dev/null
 echo -e "  → Installing packages"
-pip install -r requirements.txt > /dev/null 2>&1
+if ! pip install -r requirements.txt > /dev/null; then
+    echo -e "  ${RED}✖ Dependency installation failed (see pip output above)${NC}"
+    exit 1
+fi
 echo -e "  ${GREEN}✔ Dependencies installed${NC}\n"
 
 # 4. ffmpeg check
