@@ -24,11 +24,17 @@ echo ==========================================
 echo.
 
 :: 1. Python check
+:: requirements.txt pins packages that only publish for Python 3.13+
+:: (audioop-lts, numpy 2.3.x, scipy 1.17.x, scikit-learn 1.8.x).
 echo • Checking Python
 :CHECK_PYTHON
-python --version >nul 2>&1
-if %ERRORLEVEL% NEQ 0 (
-    echo   !RED!✖ Python missing!NC!
+set "PYTHON="
+py -3.13 -c "import sys; sys.exit(0)" >nul 2>&1 && set "PYTHON=py -3.13"
+if not defined PYTHON (
+    python -c "import sys; sys.exit(0 if sys.version_info >= (3, 13) else 1)" >nul 2>&1 && set "PYTHON=python"
+)
+if not defined PYTHON (
+    echo   !RED!✖ Python 3.13+ missing!NC!
     echo   → Opening download page
     start https://www.python.org/downloads/
     echo   → Press any key after install
@@ -40,9 +46,17 @@ echo.
 
 :: 2. Venv setup
 echo • Checking environment
+if exist ".venv" (
+    .venv\Scripts\python.exe -c "import sys; sys.exit(0 if sys.version_info >= (3, 13) else 1)" >nul 2>&1
+    if !ERRORLEVEL! NEQ 0 (
+        echo   !RED!✖ Existing .venv is older than Python 3.13!NC!
+        echo   → Delete it and re-run this script: rmdir /s /q .venv
+        exit /b 1
+    )
+)
 if not exist ".venv" (
     echo   → Creating venv
-    python -m venv .venv
+    !PYTHON! -m venv .venv
 )
 echo   → Activating venv
 call .venv\Scripts\activate.bat
@@ -50,11 +64,17 @@ echo   !GREEN!✔ Environment ready!NC!
 echo.
 
 :: 3. Dependencies
+:: Only stdout is discarded here; pip errors stay visible so a failed
+:: install reports its own reason instead of passing silently.
 echo • Installing dependencies
 echo   → Upgrading pip
-python -m pip install --upgrade pip >nul 2>&1
+python -m pip install --upgrade pip >nul
 echo   → Installing packages
-pip install -r requirements.txt >nul 2>&1
+pip install -r requirements.txt >nul
+if !ERRORLEVEL! NEQ 0 (
+    echo   !RED!✖ Dependency installation failed ^(see pip output above^)!NC!
+    exit /b 1
+)
 echo   !GREEN!✔ Dependencies installed!NC!
 echo.
 
